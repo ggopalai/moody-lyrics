@@ -16,7 +16,7 @@ Song recommendation website.
 
 - A simple web app that takes in song name and artist.
 - A backend server that -
-  - Fetches the lyrics - possibly on genius.com
+  - Fetches the lyrics - possibly on genius.com (crawler?)
   - Passes the lyrics into the model to assign a mood.
   - Uses this mood to fetch similar songs.
 - Backend served and scaled by TFX?
