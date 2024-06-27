@@ -14,7 +14,7 @@ Imports and Setup
 from google.colab import drive
 drive.mount('/content/drive')
 
-!pip install transformers
+# !pip install transformers
 
 import torch
 
