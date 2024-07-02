@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lyrics Mood Predictor</title>
+</head>
+<body>
+    <h1>Enter Song Title and Artist</h1>
+    <form id="mood-form">
+        <input type="text" id="title" placeholder="Song Title" required>
+        <input type="text" id="artist" placeholder="Artist" required>
+        <button type="submit">Predict Mood</button>
+    </form>
+    <h2 id="mood-result"></h2>
+    <pre id="lyrics"></pre>
+
+    <script>
+        document.getElementById('mood-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const artist = document.getElementById('artist').value;
+            
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, artist }),
+            });
+            const data = await response.json();
+            document.getElementById('mood-result').innerText = `Predicted Mood: ${data.mood}`;
+            document.getElementById('lyrics').innerText = data.lyrics;
+        });
+    </script>
+</body>
+</html>
