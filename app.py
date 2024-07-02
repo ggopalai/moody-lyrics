@@ -69,7 +69,7 @@ def get_prediction(iids, ams):
 def classify_lyrics(lyrics):
     input_ids, attention_masks = tokenize_and_format([lyrics.replace('\n', ' ')])
     prediction = get_prediction(input_ids, attention_masks)
-    mood = ["angry", "happy", "relaxed", "sad"][prediction]
+    mood = ["Angry", "Happy", "Relaxed", "Sad"][prediction]
     return mood
 
 @app.route('/')
