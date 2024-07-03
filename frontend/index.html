@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moody Lyrics</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
         body {
-            font-family: 'Georgia', serif;
-            background-color: #f4f4f9;
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #f3ec78, #af4261);
             color: #333;
             margin: 0;
             padding: 0;
@@ -15,22 +16,25 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            transition: background 1s ease-in-out; /* Increased duration for smoother transition */
         }
         .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 700px;
             width: 100%;
             text-align: center;
             overflow-y: auto;
             max-height: 90vh;
+            transition: background-color 0.5s ease-in-out;
         }
         h1 {
             color: #2c3e50;
             font-size: 2.5em;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-family: 'Playfair Display', serif;
         }
         form {
             display: flex;
@@ -39,31 +43,41 @@
             gap: 20px;
         }
         input[type="text"] {
-            padding: 12px;
+            padding: 15px;
             width: 80%;
             border: 2px solid #2c3e50;
             border-radius: 10px;
             font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: 'Lora', serif;
+        }
+        input[type="text"]:focus {
+            border-color: #2980b9;
+            outline: none;
         }
         button {
-            padding: 12px 30px;
-            background-color: #2c3e50;
+            padding: 15px 40px;
+            background-color: #af4261;
             color: #fff;
             border: none;
             border-radius: 10px;
             font-size: 1.2em;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+            font-family: 'Lora', serif;
         }
         button:hover {
-            background-color: #1a242f;
+            background-color: #f3ec78;
+            color: #af4261;
+            transform: translateY(-2px);
         }
         #mood-result {
             margin-top: 30px;
             font-size: 1.5em;
+            color: #2980b9;
         }
         pre {
-            background: #f4f4f9;
+            background: rgba(244, 244, 249, 0.9);
             padding: 20px;
             border-radius: 10px;
             white-space: pre-wrap;
@@ -71,11 +85,13 @@
             margin-top: 20px;
             font-family: 'Courier New', Courier, monospace;
             text-align: left;
+            transition: background-color 0.5s ease-in-out;
         }
         #results-container {
             margin-top: 30px;
             padding: 20px;
             border-radius: 10px;
+            transition: background-color 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -113,21 +129,27 @@
 
             // Change background color based on the predicted mood
             const resultsContainer = document.getElementById('results-container');
+            const body = document.body;
             switch (data.mood.toLowerCase()) {
                 case 'happy':
                     resultsContainer.style.backgroundColor = '#fff9c4'; // light yellow
+                    body.style.background = 'linear-gradient(135deg, #fff9c4, #f39c12)'; // gradient for happy
                     break;
                 case 'angry':
                     resultsContainer.style.backgroundColor = '#ffcdd2'; // light red
+                    body.style.background = 'linear-gradient(135deg, #ffcdd2, #e74c3c)'; // gradient for angry
                     break;
                 case 'relaxed':
                     resultsContainer.style.backgroundColor = '#c8e6c9'; // light green
+                    body.style.background = 'linear-gradient(135deg, #c8e6c9, #27ae60)'; // gradient for relaxed
                     break;
                 case 'sad':
                     resultsContainer.style.backgroundColor = '#bbdefb'; // light blue
+                    body.style.background = 'linear-gradient(135deg, #bbdefb, #3498db)'; // gradient for sad
                     break;
                 default:
-                    resultsContainer.style.backgroundColor = '#f4f4f9'; // default background color
+                    resultsContainer.style.backgroundColor = 'rgba(244, 244, 249, 0.9)'; // default background color
+                    body.style.background = 'linear-gradient(135deg, #f3ec78, #af4261)'; // default gradient
             }
         });
     </script>
