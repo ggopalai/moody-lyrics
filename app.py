@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from lyricsgenius import Genius
-
+import json
 import torch
 import numpy as np
 from transformers import BertTokenizer, BertForSequenceClassification
@@ -23,6 +23,12 @@ model = BertForSequenceClassification.from_pretrained(
 )
 model.load_state_dict(torch.load('backend/models/bert-mood-prediction-1.pt', map_location=torch.device('cpu')))
 model.eval()
+
+# load API Token in config file
+with open('config.json', 'r') as config_file:
+    config = json.load(config_file)
+
+
 
 def tokenize_and_format(sentences):
   tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
@@ -90,7 +96,8 @@ def predict():
 def get_lyrics(song_title, artist_name):
     # Implement the lyrics fetching logic here
     # This is a placeholder function
-    token='PFl5Jdd01ayEMNqxIkuoAWnA7N9Xw9KqD9BSphLmjQ4IBrJqyaTA9CxKP2k8yJpz'
+    # Get the token from the configuration
+    token = config.get('GENIUS_TOKEN')
     genius = Genius(token)
     genius.timeout = 300
     try:

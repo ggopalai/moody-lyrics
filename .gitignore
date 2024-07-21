@@ -1,3 +1,4 @@
 .DS_Store
 backend/.DS_Store
 backend/models/bert-mood-prediction-1.pt
+config.json
