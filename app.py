@@ -101,10 +101,11 @@ def get_lyrics(song_title, artist_name):
         if lyrics.count('-')>200:
             return False, f"Song not found - {song_title} by {artist_name}"
         verses=[]
-        for x in lyrics.split('Lyrics')[1][:-7].split('\n'):
+        for x in lyrics.split('Lyrics')[1][:-6].split('\n'):
             if '[' in list(x) or len(x)==0:
                 continue
             verses.append(x.replace("\'","'"))
+        verses[-1] = verses[-1][:-1] if verses[-1][-1].isnumeric() else verses[-1]
         return True, '\n'.join(verses)
     except TimeoutError:
         return False, "TIMEOUT"

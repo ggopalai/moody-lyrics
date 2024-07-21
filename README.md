@@ -5,7 +5,7 @@ Song recommendation website.
 ## High-Level Functional Features
 
 - Associates a song with a mood based on the lyrics.
-- Lists out similar songs.
+- Lists out similar songs. (TODO)
 
 ## Eventual Non-Functional Features
 
@@ -16,13 +16,19 @@ Song recommendation website.
 
 - A simple web app that takes in song name and artist.
 - A backend server that -
-  - Fetches the lyrics - possibly on genius.com (crawler?)
+  - Fetches the lyrics from genius.com
   - Passes the lyrics into the model to assign a mood.
-  - Uses this mood to fetch similar songs.
-- Backend served and scaled by TFX?
+  - Uses this mood to fetch similar songs. (TODO)
+- Backend served and scaled by TFX (TODO)
 
 ### Tech Stack
 
-- Front-end - React
+- Front-end - React (TODO)
 - Rest of the stuff in Python.
-- Database - TDB
+- Database - TBD
+
+## TODO
+- Deploy the simple flask app
+- Added functionality: Interpet model prediction
+- Added functionality: Store predictions
+- Added functionality: Validation by user
