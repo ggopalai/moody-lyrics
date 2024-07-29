@@ -94,9 +94,6 @@ def predict():
     return jsonify({'mood': '-', 'lyrics': lyrics})
 
 def get_lyrics(song_title, artist_name):
-    # Implement the lyrics fetching logic here
-    # This is a placeholder function
-    # Get the token from the configuration
     token = config.get('GENIUS_TOKEN')
     genius = Genius(token)
     genius.timeout = 300
@@ -118,4 +115,4 @@ def get_lyrics(song_title, artist_name):
         return False, "TIMEOUT"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000)
