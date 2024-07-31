@@ -3,7 +3,7 @@ from lyricsgenius import Genius
 import json
 import torch
 import numpy as np
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
 
 app = Flask(__name__)
 
@@ -14,14 +14,17 @@ mood_map = {
     2: 'Relaxed'
 }
 
-# Load your pre-trained model and tokenizer
-model = BertForSequenceClassification.from_pretrained(
-    "bert-base-uncased", # Use the 12-layer BERT model, with an uncased vocab.
-    num_labels = 4, # The number of output labels.
-    output_attentions = False, # Whether the model returns attentions weights.
-    output_hidden_states = False, # Whether the model returns all hidden-states.
-)
-model.load_state_dict(torch.load('backend/models/bert-mood-prediction-1.pt', map_location=torch.device('cpu')))
+# model = BertForSequenceClassification.from_pretrained(
+#     "bert-base-uncased", # Use the 12-layer BERT model, with an uncased vocab.
+#     num_labels = 4, # The number of output labels.
+#     output_attentions = False, # Whether the model returns attentions weights.
+#     output_hidden_states = False, # Whether the model returns all hidden-states.
+# )
+# model.load_state_dict(torch.load('backend/models/bert-mood-prediction-1.pt', map_location=torch.device('cpu')))
+# model.eval()
+
+tokenizer = AutoTokenizer.from_pretrained("dhruthick/my-bert-lyrics-classifier")
+model = AutoModelForSequenceClassification.from_pretrained("dhruthick/my-bert-lyrics-classifier")
 model.eval()
 
 # load API Token in config file
@@ -115,4 +118,4 @@ def get_lyrics(song_title, artist_name):
         return False, "TIMEOUT"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=7860)
