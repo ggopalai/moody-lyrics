@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from lyricsgenius import Genius
 import json
 import torch
+import logging
 import numpy as np
 import os
 from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
@@ -11,6 +12,10 @@ os.environ['TRANSFORMERS_CACHE'] = './hf_cache'
 
 app = Flask(__name__)
 
+# Configure Flask logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.StreamHandler()])
 mood_map = {
     0: 'Angry',
     1: 'Happy',
@@ -77,13 +82,15 @@ def get_prediction(iids, ams):
                         attention_mask=ams)
     logits = outputs.logits.detach().numpy()
     pred_flat = np.argmax(logits, axis=1).flatten()
-    return pred_flat[0]
+    probabilities = torch.softmax(outputs.logits, dim=1).tolist()[0]
+    return pred_flat[0], probabilities
 
 def classify_lyrics(lyrics):
     input_ids, attention_masks = tokenize_and_format([lyrics.replace('\n', ' ')])
-    prediction = get_prediction(input_ids, attention_masks)
+    prediction, probabilities = get_prediction(input_ids, attention_masks)
     mood = ["Angry", "Happy", "Relaxed", "Sad"][prediction]
-    return mood
+    app.logger.info(f"probabilities: {probabilities}")
+    return mood, probabilities
 
 @app.route('/')
 def index():
@@ -96,9 +103,9 @@ def predict():
     artist_name = data['artist']
     success, lyrics = get_lyrics(song_title, artist_name)
     if success:
-        mood = classify_lyrics(lyrics)
-        return jsonify({'mood': mood, 'lyrics': lyrics})
-    return jsonify({'mood': '-', 'lyrics': lyrics})
+        mood, probabilities = classify_lyrics(lyrics)
+        return jsonify({'mood': mood, 'lyrics': lyrics, 'probabilities': probabilities})
+    return jsonify({'mood': '-', 'lyrics': lyrics, 'probabilities': [0, 0, 0, 0]})
 
 def get_lyrics(song_title, artist_name):
     token = config.get('GENIUS_TOKEN')

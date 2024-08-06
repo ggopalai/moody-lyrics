@@ -16,11 +16,11 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            transition: background 1s ease-in-out; /* Increased duration for smoother transition */
+            transition: background 1s ease-in-out; /* Smooth gradient transition */
         }
         .container {
             background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 700px;
@@ -29,11 +29,14 @@
             overflow-y: auto;
             max-height: 90vh;
             transition: background-color 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         h1 {
             color: #2c3e50;
             font-size: 2.5em;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-family: 'Playfair Display', serif;
         }
         form {
@@ -72,9 +75,13 @@
             transform: translateY(-2px);
         }
         #mood-result {
-            margin-top: 30px;
+            margin-top: 20px;
             font-size: 1.5em;
             color: #2980b9;
+        }
+        #mood-chart {
+            max-width: 100%;
+            height: 300px;
         }
         pre {
             background: rgba(244, 244, 249, 0.9);
@@ -88,10 +95,39 @@
             transition: background-color 0.5s ease-in-out;
         }
         #results-container {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
             border-radius: 10px;
             transition: background-color 0.5s ease-in-out;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+        }
+        #more-info {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+            text-align: left;
+            font-size: 0.9em;
+            color: #333;
+            padding: 0;
+            border-radius: 10px;
+            background: rgba(244, 244, 249, 0.9);
+        }
+        #more-info.show {
+            display: block;
+            max-height: 500px; /* Adjust as needed */
+            opacity: 1;
+        }
+        #more-info-link {
+            color: #333; /* Match the rest of the text color */
+            cursor: pointer;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -105,15 +141,71 @@
         </form>
         <div id="results-container">
             <h2 id="mood-result"></h2>
+            <canvas id="mood-chart"></canvas>
             <pre id="lyrics"></pre>
         </div>
+        <div class="footer">
+            This app analyzes song lyrics to predict their mood. Enter a song title and artist, and get mood predictions along with the lyrics. Deployed using Hugging Face Spaces.
+            <br><br>
+            <a href="#" id="more-info-link">Click here to learn more about how this web app works</a>
+            <div id="more-info">
+                <p><strong>How it Works:</strong></p>
+                <p>This web app utilizes a fine-tuned BERT model to analyze the mood of song lyrics. Upon entering a song title and artist, the app retrieves the song's lyrics from Genius, processes them through the BERT model, and predicts the mood.</p>
+                <p><strong>Technology:</strong></p>
+                <ul>
+                    <li><strong>Model:</strong> BERT (Bidirectional Encoder Representations from Transformers) fine-tuned on song lyrics to classify moods.</li>
+                    <li><strong>Framework:</strong> PyTorch and Hugging Face Transformers library for model training and prediction.</li>
+                    <li><strong>Deployment:</strong> The web app is hosted and deployed using Hugging Face Spaces, which provides a simple interface for serving machine learning models.</li>
+                </ul>
+            </div>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Initialize the chart with zero probabilities
+        const ctx = document.getElementById('mood-chart').getContext('2d');
+        let moodChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Angry', 'Happy', 'Relaxed', 'Sad'],
+                datasets: [{
+                    label: 'Mood Probabilities',
+                    data: [0, 0, 0, 0], // Initial data
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 1,
+                        ticks: {
+                            stepSize: 0.1,
+                            callback: function(value) { return value.toFixed(1); } // Format y-axis labels
+                        }
+                    }
+                }
+            }
+        });
+
         document.getElementById('mood-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const title = document.getElementById('title').value;
             const artist = document.getElementById('artist').value;
-            
+
             const response = await fetch('/predict', {
                 method: 'POST',
                 headers: {
@@ -124,6 +216,7 @@
             const data = await response.json();
             document.getElementById('mood-result').innerText = `Predicted Mood: ${data.mood}`;
             document.getElementById('lyrics').innerText = data.lyrics;
+
             // Scroll to the top of the container to ensure the form remains visible
             document.querySelector('.container').scrollTop = 0;
 
@@ -150,6 +243,23 @@
                 default:
                     resultsContainer.style.backgroundColor = 'rgba(244, 244, 249, 0.9)'; // default background color
                     body.style.background = 'linear-gradient(135deg, #f3ec78, #af4261)'; // default gradient
+            }
+
+            // Update chart with new data
+            moodChart.data.datasets[0].data = data.probabilities || [0, 0, 0, 0];
+            moodChart.update();
+        });
+
+        // Toggle detailed description with smooth effect
+        document.getElementById('more-info-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            const moreInfo = document.getElementById('more-info');
+            if (moreInfo.style.display === 'none' || !moreInfo.style.display) {
+                moreInfo.style.display = 'block';
+                setTimeout(() => moreInfo.classList.add('show'), 10);
+            } else {
+                moreInfo.classList.remove('show');
+                setTimeout(() => moreInfo.style.display = 'none', 500);
             }
         });
     </script>
