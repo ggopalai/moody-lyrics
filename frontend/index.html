@@ -115,7 +115,7 @@
             text-align: left;
             font-size: 0.9em;
             color: #333;
-            padding: 0;
+            padding: 20px;
             border-radius: 10px;
             background: rgba(244, 244, 249, 0.9);
         }
@@ -129,6 +129,24 @@
             cursor: pointer;
             text-decoration: underline;
         }
+        .spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin-top: 20px;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border: 0.3em solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #af4261;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -141,22 +159,28 @@
         </form>
         <div id="results-container">
             <h2 id="mood-result"></h2>
+            <div id="spinner" class="spinner" style="display: none;">
+                <div class="spinner-border" role="status"></div>
+            </div>
             <canvas id="mood-chart"></canvas>
             <pre id="lyrics"></pre>
         </div>
         <div class="footer">
-            This app analyzes song lyrics to predict their mood. Enter a song title and artist, and get mood predictions along with the lyrics. Deployed using Hugging Face Spaces.
+            This app analyzes song lyrics to predict their mood. Enter a song title and artist, and get mood predictions along with the lyrics. Deployed using Hugging Face Spaces. The model may be inaccurate in some cases.
             <br><br>
             <a href="#" id="more-info-link">Click here to learn more about how this web app works</a>
             <div id="more-info">
                 <p><strong>How it Works:</strong></p>
-                <p>This web app utilizes a fine-tuned BERT model to analyze the mood of song lyrics. Upon entering a song title and artist, the app retrieves the song's lyrics from Genius, processes them through the BERT model, and predicts the mood.</p>
+                <p>This web app utilizes a fine-tuned BERT model to analyze the mood of song lyrics. Upon entering a song title and artist, the app retrieves the song's lyrics from Genius, processes them through the BERT model, and predicts the mood. The model's accuracy is 93% on its test set.</p>
                 <p><strong>Technology:</strong></p>
                 <ul>
                     <li><strong>Model:</strong> BERT (Bidirectional Encoder Representations from Transformers) fine-tuned on song lyrics to classify moods.</li>
                     <li><strong>Framework:</strong> PyTorch and Hugging Face Transformers library for model training and prediction.</li>
+                    <li><strong>Frontend:</strong> HTML, CSS, and JavaScript.</li>
+                    <li><strong>Backend:</strong> Flask.</li>
                     <li><strong>Deployment:</strong> The web app is hosted and deployed using Hugging Face Spaces, which provides a simple interface for serving machine learning models.</li>
                 </ul>
+                <p>For the source code, visit: <a href="https://github.com/ggopalai/moody-lyrics/tree/master" target="_blank">GitHub Repository</a></p>
             </div>
         </div>
     </div>
@@ -206,6 +230,9 @@
             const title = document.getElementById('title').value;
             const artist = document.getElementById('artist').value;
 
+            // Show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+
             const response = await fetch('/predict', {
                 method: 'POST',
                 headers: {
@@ -216,6 +243,9 @@
             const data = await response.json();
             document.getElementById('mood-result').innerText = `Predicted Mood: ${data.mood}`;
             document.getElementById('lyrics').innerText = data.lyrics;
+
+            // Hide the spinner
+            document.getElementById('spinner').style.display = 'none';
 
             // Scroll to the top of the container to ensure the form remains visible
             document.querySelector('.container').scrollTop = 0;
