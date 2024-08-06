@@ -1,3 +1,14 @@
+---
+title: Moody Lyrics
+emoji: 👀
+colorFrom: gray
+colorTo: indigo
+sdk: docker
+pinned: false
+license: mit
+---
+
+
 # Moody Lyrics
 
 Song recommendation website.
