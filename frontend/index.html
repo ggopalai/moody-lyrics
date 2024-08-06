@@ -147,6 +147,17 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        #accuracy-test {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #accuracy-test button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -164,11 +175,17 @@
             </div>
             <canvas id="mood-chart"></canvas>
             <pre id="lyrics"></pre>
+            <!-- Feedback and Accuracy Test -->
+            <div id="accuracy-test">
+                <p>Did the model get the mood right?</p>
+                <button id="correct" title="Yes">Yes</button>
+                <button id="incorrect" title="No">No</button>
+            </div>
         </div>
         <div class="footer">
             This app analyzes song lyrics to predict their mood. Enter a song title and artist, and get mood predictions along with the lyrics. Deployed using Hugging Face Spaces. The model may be inaccurate in some cases.
             <br><br>
-            <a href="#" id="more-info-link">Click here to learn more about how this web app works</a>
+            <a href="#" id="more-info-link">Learn more.</a>
             <div id="more-info">
                 <p><strong>How it Works:</strong></p>
                 <p>This web app utilizes a fine-tuned BERT model to analyze the mood of song lyrics. Upon entering a song title and artist, the app retrieves the song's lyrics from Genius, processes them through the BERT model, and predicts the mood. The model's accuracy is 93% on its test set.</p>
@@ -278,19 +295,37 @@
             // Update chart with new data
             moodChart.data.datasets[0].data = data.probabilities || [0, 0, 0, 0];
             moodChart.update();
+
+            // Show feedback section
+            document.getElementById('accuracy-test').style.display = 'block';
         });
 
-        // Toggle detailed description with smooth effect
+        // Toggle detailed description with smooth effect and scroll to it
         document.getElementById('more-info-link').addEventListener('click', function(event) {
             event.preventDefault();
             const moreInfo = document.getElementById('more-info');
             if (moreInfo.style.display === 'none' || !moreInfo.style.display) {
                 moreInfo.style.display = 'block';
-                setTimeout(() => moreInfo.classList.add('show'), 10);
+                setTimeout(() => {
+                    moreInfo.classList.add('show');
+                    // Scroll to the more-info section smoothly
+                    moreInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 10);
             } else {
                 moreInfo.classList.remove('show');
                 setTimeout(() => moreInfo.style.display = 'none', 500);
             }
+        });
+
+        // Handle accuracy test
+        document.getElementById('correct').addEventListener('click', function() {
+            alert('Thank you for the feedback!');
+            // Send correct feedback to the server if needed
+        });
+
+        document.getElementById('incorrect').addEventListener('click', function() {
+            alert('Thank you for the feedback!');
+            // Send incorrect feedback to the server if needed
         });
     </script>
 </body>
