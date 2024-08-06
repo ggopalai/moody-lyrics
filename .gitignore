@@ -1,3 +1,7 @@
 .DS_Store
 backend/.DS_Store
 backend/models/bert-mood-prediction-1.pt
+config.json
+backend/models/.locks
+backend/models/models--dhruthick--my-bert-lyrics-classifier
+hf_cache

@@ -3,7 +3,11 @@ from lyricsgenius import Genius
 import json
 import torch
 import numpy as np
+import os
 from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
+
+# Set the TRANSFORMERS_CACHE environment variable
+os.environ['TRANSFORMERS_CACHE'] = './hf_cache'
 
 app = Flask(__name__)
 
